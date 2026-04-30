@@ -1,0 +1,131 @@
+{
+  "last_updated": "2026-04-30T07:08:36.357352",
+  "matches": [
+    {
+      "id": "77536",
+      "status": "SCHEDULED",
+      "home_team": "FC Bayern M\u00fcnchen",
+      "away_team": "1. FC Heidenheim 1846",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    },
+    {
+      "id": "77538",
+      "status": "SCHEDULED",
+      "home_team": "Eintracht Frankfurt",
+      "away_team": "Hamburger SV",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    },
+    {
+      "id": "77540",
+      "status": "SCHEDULED",
+      "home_team": "SV Werder Bremen",
+      "away_team": "FC Augsburg",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    },
+    {
+      "id": "77542",
+      "status": "SCHEDULED",
+      "home_team": "1. FC Union Berlin",
+      "away_team": "1. FC K\u00f6ln",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    },
+    {
+      "id": "77544",
+      "status": "SCHEDULED",
+      "home_team": "TSG Hoffenheim",
+      "away_team": "VfB Stuttgart",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    },
+    {
+      "id": "77537",
+      "status": "SCHEDULED",
+      "home_team": "Bayer 04 Leverkusen",
+      "away_team": "RB Leipzig",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    },
+    {
+      "id": "77543",
+      "status": "SCHEDULED",
+      "home_team": "FC St. Pauli",
+      "away_team": "1. FSV Mainz 05",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    },
+    {
+      "id": "77541",
+      "status": "SCHEDULED",
+      "home_team": "Borussia M\u00f6nchengladbach",
+      "away_team": "Borussia Dortmund",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    },
+    {
+      "id": "77539",
+      "status": "SCHEDULED",
+      "home_team": "SC Freiburg",
+      "away_team": "VfL Wolfsburg",
+      "home_logo": "https://example.com/placeholder.png",
+      "away_logo": "https://example.com/placeholder.png",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "minute": 0,
+      "league": "1. Fu\u00dfball-Bundesliga 2025/2026"
+    }
+  ]
+}
