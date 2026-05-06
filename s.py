@@ -1,77 +1,90 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+import requests
 from bs4 import BeautifulSoup
+import json
 import time
+import os
 
-def get_kooora_debug():
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    # تمويه إضافي للمتصفح
-    chrome_options.add_argument("window-size=1920,1080")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+# جلب الرابط من Secrets
+FIREBASE_URL = os.getenv('FIREBASE_URL')
 
-    driver_path = '/data/data/com.termux/files/usr/bin/chromedriver'
+def get_match_details(match_url):
+    try:
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        res = requests.get(match_url, headers=headers, timeout=10)
+        res.encoding = 'utf-8'
+        soup = BeautifulSoup(res.text, 'html.parser')
+        
+        page_text = soup.get_text()
+        commentator = "غير مدرج"
+        channel = "غير مدرجة"
+        
+        if "معلق:" in page_text:
+            commentator = page_text.split("معلق:")[1].split("\n")[0].strip()
+        if "القنوات الناقلة:" in page_text:
+            channel = page_text.split("القنوات الناقلة:")[1].split("\n")[0].strip()
+            
+        return commentator, channel
+    except:
+        return "غير مدرج", "غير مدرجة"
+
+def push_to_firebase(match_date, match_data):
+    # تنظيف الـ ID من الرموز الممنوعة في Firebase
+    match_id = f"{match_data['home_team']}_{match_data['away_team']}".replace(" ", "_").replace(".", "").replace("$","").replace("#","")
+    url = f"{FIREBASE_URL}/{match_date}/{match_id}.json"
+    
+    try:
+        response = requests.put(url, json=match_data)
+        if response.status_code == 200:
+            print(f"✅ Synced: {match_data['home_team']}")
+    except Exception as e:
+        print(f"❌ Firebase Error: {e}")
+
+def run_scraper():
+    if not FIREBASE_URL:
+        print("❌ Error: FIREBASE_URL secret is not set!")
+        return
+
+    url = "https://www.kooora.com/?region=-1&area=0"
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
     try:
-        driver = webdriver.Chrome(executable_path=driver_path, options=chrome_options)
-        
-        # الرابط المباشر لمباريات اليوم لضمان تحميل القسم الصحيح
-        url = "https://www.kooora.com/?region=-1&area=0"
-        driver.get(url)
-        
-        print("جاري فحص محتوى الصفحة...")
-        time.sleep(10) # زيادة وقت الانتظار لضمان تحميل الـ Ajax
+        response = requests.get(url, headers=headers)
+        response.encoding = 'utf-8'
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        scripts = soup.find_all('script', type='application/ld+json')
+        count = 0
         
-        # محاولة البحث عن المباريات داخل الجداول (الهيكل الكلاسيكي لكووورة)
-        matches = []
-        
-        # كووورة غالباً ما يستخدم جداول تحمل كلاس 'm_table' للمباريات
-        tables = soup.find_all('table', class_='m_table')
-        
-        if not tables:
-            # إذا لم يجد جداول، سنبحث عن أي عنصر يحتوي على كلمة 'vs' أو ' - ' بين فريقين
-            print("لم يتم العثور على جداول مألوفة، جاري البحث عن هيكلية بديلة...")
-            # فحص الـ match_box مجدداً ولكن بشكل أعمق
-            items = soup.select('div[class*="match"]')
-            print(f"تم العثور على {len(items)} عنصر مرشح لأن يكون مباراة.")
-        
-        for table in tables:
-            rows = table.find_all('tr')
-            for row in rows:
-                if 'match_row' in str(row.get('class', [])) or row.find('td', class_='match_time'):
-                    try:
-                        # استخراج البيانات بناءً على ترتيب الأعمدة
-                        cols = row.find_all('td')
-                        if len(cols) >= 3:
-                            team_left = row.find('td', class_='team_left').text.strip()
-                            team_right = row.find('td', class_='team_right').text.strip()
-                            m_time = row.find('td', class_='match_time').text.strip()
-                            
-                            print(f"تم الجلب: {team_left} vs {team_right} في وقت {m_time}")
-                            matches.append({
-                                "team1": team_left,
-                                "team2": team_right,
-                                "time": m_time
-                            })
-                    except:
-                        continue
-
-        if not matches:
-            # تصحيح الأخطاء: حفظ نسخة من الصفحة لرؤية ما يراه البوت
-            with open("debug_page.html", "w", encoding="utf-8") as f:
-                f.write(driver.page_source)
-            print("للأسف لم يتم العثور على بيانات. تم حفظ كود الصفحة في debug_page.html للفحص.")
-
-        return matches
-
+        for script in scripts:
+            try:
+                data = json.loads(script.string)
+                if isinstance(data, dict) and data.get('@type') == 'SportsEvent':
+                    match_url = data.get('url')
+                    home_team = data.get('homeTeam', {}).get('name')
+                    away_team = data.get('awayTeam', {}).get('name')
+                    
+                    commentator, channel = get_match_details(match_url)
+                    match_date = data.get('startDate').split('T')[0]
+                    
+                    match_info = {
+                        "league": data.get('description', '').split(' - ')[0],
+                        "home_team": home_team,
+                        "home_logo": data.get('homeTeam', {}).get('logo'),
+                        "away_team": away_team,
+                        "away_logo": data.get('awayTeam', {}).get('logo'),
+                        "time": data.get('startDate'),
+                        "commentator": commentator,
+                        "channel": channel
+                    }
+                    
+                    push_to_firebase(match_date, match_info)
+                    count += 1
+                    time.sleep(1) 
+            except:
+                continue
+        print(f"🏁 Total processed: {count}")
     except Exception as e:
-        print(f"خطأ: {e}")
-    finally:
-        if 'driver' in locals():
-            driver.quit()
+        print(f"❌ Main Error: {e}")
 
-get_kooora_debug()
+if __name__ == "__main__":
+    run_scraper()
