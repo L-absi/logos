@@ -3,7 +3,7 @@ name: Daily Matches Sync
 on:
   schedule:
     # سيتم التشغيل كل ساعة
-    - cron: '0 * * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch: # زر للتشغيل اليدوي
 
 jobs:
